@@ -1,0 +1,26 @@
+{
+  "name": "webman",
+  "version": "0.0.1",
+  "description": "Simple and customizable content management system",
+  "main": "bin/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GriffFerguson/webman.git"
+  },
+  "keywords": [
+    "content",
+    "manager",
+    "cms",
+    "web"
+  ],
+  "author": "Griffin Ferguson",
+  "license": "MIT",
+  "dependencies": {
+    "mongodb": "^4.10.0",
+    "pug": "^3.0.2",
+    "typescript": "^4.8.3"
+  }
+}
