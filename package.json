@@ -19,8 +19,11 @@
   "author": "Griffin Ferguson",
   "license": "MIT",
   "dependencies": {
+    "express": "^4.18.1",
     "mongodb": "^4.10.0",
-    "pug": "^3.0.2",
+    "pug": "^3.0.2"
+  },
+  "devDependencies": {
     "typescript": "^4.8.3"
   }
 }
