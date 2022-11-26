@@ -1,7 +1,11 @@
 import * as mongo from "mongodb";
-import { join } from "path"
 import express from "express";
+import * as bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
+import * as bcrypt from "bcrypt";
 import { readFileSync, createReadStream } from "fs";
+import { join } from "path"
+
 
 interface config {
     port: number,
@@ -21,12 +25,18 @@ try {
 }
 
 const app = express();
+
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
+
 app.listen(config.port);
+console.log("Webman is running on port " + config.port)
 
 
 const client = new mongo.MongoClient(config.dbURL);
 client.connect();
-const auth = client.db('webman_auth').collection('auth')
+const auth = client.db('webman_auth').collection('auth_keys');
+auth.insertOne({user: "test_account", pass: "test123"});
 
 app.route('/auth')
     .get((req, res) => {
@@ -35,7 +45,13 @@ app.route('/auth')
                 res.send(data);
             });
     })
-    .post((req, res) => {
-        auth.findOne({user: req.query.u, pass: req.query.p});
-        // res.send('Send login details\n' + `Username: ${req.query.u} Password: ${req.query.p}`);
+    .post(async (req, res) => {
+        console.log(req.body)
+        var authDetails = {
+            user: req.body.user,
+            pass: bcrypt.hashSync(req.body.pass, 12)
+        }
+        console.log("Auth details\n" + authDetails);
+        var authMatch = await auth.findOne(authDetails);
+        console.log("MATHC:\n" + authMatch);
     })
