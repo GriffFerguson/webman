@@ -6,7 +6,7 @@
     <title>Authenticate | Webman Content Manager</title>
     <style>
         body {
-            background: linear-gradient(rgb(255,255,255), rgb(230, 246, 255));
+            background: linear-gradient(rgb(255,255,255), rgb(145, 225, 255));
             height:100vh;
             width:100vw;
             margin:0;
@@ -30,10 +30,11 @@
     </style>
 </head>
 <body>
-    <form id="wrapper" action="/auth">
+    <form id="wrapper" action="/auth" method="post" enctype="multipart/form-data">
         <h1>Welcome to Webman</h1>
-        <input id="username" name="username" aria-label="Username" type="text" placeholder="Username">
-        <input id="password" name="password" aria-label="Password" type="password" placeholder="Password">
+        <input id="username" name="user" aria-label="Username" type="text" placeholder="Username" autocomplete="false">
+        <input id="password" name="pass" aria-label="Password" type="password" placeholder="Password">
+        <input type="submit" value="Submit">
     </form>
 </body>
 </html>
