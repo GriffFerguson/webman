@@ -16,7 +16,7 @@
             text-align: center;
             font-family: 'Arial', sans-serif;
         }
-        #wrapper {
+        #authenticate {
             display:flex;
             flex-direction: column;
             justify-content: center;
@@ -30,11 +30,30 @@
     </style>
 </head>
 <body>
-    <form id="wrapper" action="/auth" method="post" enctype="multipart/form-data">
+    <form id="authenticate" method="post" enctype="multipart/form-data">
         <h1>Welcome to Webman</h1>
         <input id="username" name="user" aria-label="Username" type="text" placeholder="Username" autocomplete="false">
         <input id="password" name="pass" aria-label="Password" type="password" placeholder="Password">
         <input type="submit" value="Submit">
     </form>
+    <p id="notification"></p>
+    <script>
+        var form = document.getElementById("authenticate");
+        var notification = document.getElementById("notification");
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            fetch("/auth", {
+                method: 'POST',
+                headers: { "Content-Type": "multipart/form-data; boundary=" },
+                body: new FormData(form)
+            }).then(async res => {
+                notification.innerText= await res.text();
+            });
+
+            
+        })
+    </script>
 </body>
 </html>
