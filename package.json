@@ -4,6 +4,7 @@
   "description": "Simple and customizable content management system",
   "main": "dist/index.js",
   "scripts": {
+    "build": "tsc && docker build -t webman:latest .",
     "test": "tsc && node --enable-source-maps dist/index.js"
   },
   "repository": {
