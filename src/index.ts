@@ -5,19 +5,9 @@ import * as bcrypt from "bcrypt";
 import { readFileSync, createReadStream } from "fs";
 import { join } from "path"
 import multer from "multer";
+import * as auth from "./auth.js";
 
-
-interface config {
-    port: number,
-    dbURL: string
-}
-
-interface user {
-    user: string,
-    pass: string
-}
-
-var config: config;
+var config: Config;
 
 try {
     config = JSON.parse(readFileSync("./webman.config.json", {encoding: 'utf8'}));
@@ -40,7 +30,7 @@ console.log("Webman is running on port " + config.port);
 const client = new mongo.MongoClient(config.dbURL);
 client.connect();
 console.log("Connected to MongoDB instance at " + config.dbURL);
-const auth = client.db('webman').collection('auth_keys');
+const authDB = client.db('webman').collection('auth_keys');
 // auth.insertOne({user: "test_account", pass: bcrypt.hashSync("test123", 17)});
 
 // AUTH
@@ -52,24 +42,14 @@ app.route('/auth')
             });
     })
     .post(upload.none(), async (req, res) => {
+        // res.setHeader("Content-Type", "text/plain");
         console.log("Auth details", req.body);
         if (!req.body) {
             res.send("Rejected");
             return;
         }
-        var authMatch = await (await auth.find({user: req.body.user})).toArray();
-        console.log("Match: ", authMatch);
-        if (authMatch.length == 0) {
-            res.send("Rejected");
-            return;
-        }
-        authMatch.forEach((match) => {
-            if (bcrypt.compareSync(req.body.pass, match.pass)) {
-                res.send("Passed");
-                return;
-            } else {
-                res.send("Rejected");
-                return;
-            };
-        });
+        var match = await auth.authenticate(req.body, config.dbURL);
+        console.log("Match", match);
+        res.send(match);
+        res.end();
     });

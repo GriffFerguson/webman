@@ -29,10 +29,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongo = __importStar(require("mongodb"));
 const express_1 = __importDefault(require("express"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const bcrypt = __importStar(require("bcrypt"));
 const fs_1 = require("fs");
 const path_1 = require("path");
 const multer_1 = __importDefault(require("multer"));
+const auth = __importStar(require("./auth.js"));
 var config;
 try {
     config = JSON.parse((0, fs_1.readFileSync)("./webman.config.json", { encoding: 'utf8' }));
@@ -52,7 +52,7 @@ console.log("Webman is running on port " + config.port);
 const client = new mongo.MongoClient(config.dbURL);
 client.connect();
 console.log("Connected to MongoDB instance at " + config.dbURL);
-const auth = client.db('webman').collection('auth_keys');
+const authDB = client.db('webman').collection('auth_keys');
 app.route('/auth')
     .get((req, res) => {
     (0, fs_1.createReadStream)((0, path_1.join)(__dirname, "../public/pages/auth.html"), { encoding: "utf8" })
@@ -66,22 +66,9 @@ app.route('/auth')
         res.send("Rejected");
         return;
     }
-    var authMatch = await (await auth.find({ user: req.body.user })).toArray();
-    console.log("Match: ", authMatch);
-    if (authMatch.length == 0) {
-        res.send("Rejected");
-        return;
-    }
-    authMatch.forEach((match) => {
-        if (bcrypt.compareSync(req.body.pass, match.pass)) {
-            res.send("Passed");
-            return;
-        }
-        else {
-            res.send("Rejected");
-            return;
-        }
-        ;
-    });
+    var match = await auth.authenticate(req.body, config.dbURL);
+    console.log("Match", match);
+    res.send(match);
+    res.end();
 });
 //# sourceMappingURL=index.js.map
